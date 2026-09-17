@@ -1,5 +1,6 @@
 import { SecretsManager } from './SecretsManager';
 import { ReasoningEffort } from './types';
+import { toOpenRouterModel } from './openaiModels';
 import type { OpenRouter } from '@openrouter/sdk';
 import type {
   Model,
@@ -15,6 +16,8 @@ const HTTP_REFERER = 'https://github.com/ostash/openrouter-chat-provider';
 const APP_TITLE = 'OpenRouter Chat Provider for VSCode';
 const APP_CATEGORIES = 'ide-extension';
 
+export type ApiDialect = 'openrouter' | 'openai';
+
 export class OpenRouterClient {
   private sdkClient: OpenRouter | null = null;
   private cachedApiKey: string | null = null;
@@ -23,6 +26,7 @@ export class OpenRouterClient {
   constructor(
     private readonly secrets: SecretsManager,
     private readonly baseUrl: string,
+    private readonly apiDialect: ApiDialect = 'openrouter',
   ) {}
 
   private async getClient(): Promise<OpenRouter> {
@@ -65,11 +69,34 @@ export class OpenRouterClient {
   }
 
   async listModels(): Promise<Model[]> {
+    if (this.apiDialect === 'openai') {
+      return this.listOpenAIModels();
+    }
     const client = await this.getClient();
     const response = await client.models.listForUser(
       { bearer: this.cachedApiKey! },
     );
     return response.data;
+  }
+
+  /**
+   * Plain OpenAI-compatible listing: GET {base}/models. The response is
+   * OpenAI-shaped (id/object/created/owned_by) and is adapted to the
+   * OpenRouter model shape, since the endpoint provides no metadata.
+   */
+  private async listOpenAIModels(): Promise<Model[]> {
+    const apiKey = await this.secrets.getApiKey();
+    if (!apiKey) {
+      throw new Error('API key is not set. Use ORCP: Set API Key command.');
+    }
+    const response = await fetch(`${this.baseUrl}/models`, {
+      headers: { Authorization: `Bearer ${apiKey}` },
+    });
+    if (!response.ok) {
+      throw new Error(`GET ${this.baseUrl}/models failed: ${response.status} ${response.statusText}`);
+    }
+    const payload = (await response.json()) as { data?: Array<{ id: string }> };
+    return (payload.data ?? []).map(m => toOpenRouterModel(m.id));
   }
 
   async streamChat(

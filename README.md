@@ -51,6 +51,20 @@ Custom OpenRouter API base URL (default: `https://openrouter.ai/api/v1`).
 
 Useful for proxies, self-hosted instances, or testing.
 
+### `orcp.apiDialect`
+
+Dialect spoken by `orcp.baseUrl` (default: `openrouter`).
+
+- `openrouter` — models are listed via OpenRouter's `GET /models/user`, with OpenRouter model metadata (tool support, context window, modalities)
+- `openai` — models are listed via the plain OpenAI-compatible `GET /models`. Use this for endpoints such as [IO Intelligence](https://io.net/), vLLM, or LiteLLM. All listed models are treated as text chat models with tool calling; reasoning-effort variants are not available in this mode.
+
+```json
+{
+  "orcp.baseUrl": "https://api.intelligence.io.solutions/api/v1",
+  "orcp.apiDialect": "openai"
+}
+```
+
 ### `orcp.models`
 
 Per-model configuration. Keys are OpenRouter model IDs. Set `enabled` to false to hide a model. Use `effortLevels` to expose reasoning effort variants (low, medium, high) for supported models.
@@ -68,6 +82,11 @@ Per-model configuration. Keys are OpenRouter model IDs. Set `enabled` to false t
     },
     "meta-llama/llama-3.3-70b-instruct": {
       "enabled": false
+    },
+    "deepseek-ai/deepseek-r1-0528": {
+      "enabled": true,
+      "contextLength": 163840,
+      "maxOutputTokens": 65536
     }
   }
 }
@@ -76,6 +95,7 @@ Per-model configuration. Keys are OpenRouter model IDs. Set `enabled` to false t
 **Notes:**
 - Models not listed are **enabled by default** with no effort variants
 - Effort levels only work on models that support reasoning (e.g., Claude, GPT-5)
+- `contextLength` / `maxOutputTokens` override the values reported by the API — useful with `orcp.apiDialect` `"openai"`, where `GET /models` does not include them (defaults: 32768 / 4096)
 - Model IDs can be found in the [OpenRouter model list](https://openrouter.ai/models)
 
 ## Commands

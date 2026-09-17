@@ -1,6 +1,6 @@
 import vscode from 'vscode';
 import { SecretsManager } from './SecretsManager';
-import { OpenRouterClient } from './OpenRouterClient';
+import { OpenRouterClient, type ApiDialect } from './OpenRouterClient';
 import { ModelRegistry } from './ModelRegistry';
 import { SessionTracker } from './SessionTracker';
 import { ChatProvider } from './ChatProvider';
@@ -16,9 +16,10 @@ export async function registerAll(
 ): Promise<RegistrationResult> {
   const cfg = vscode.workspace.getConfiguration('orcp');
   const baseUrl: string = cfg.get('baseUrl', 'https://openrouter.ai/api/v1');
+  const apiDialect: ApiDialect = cfg.get('apiDialect', 'openrouter');
   const modelConfigs: Record<string, ModelConfig> = cfg.get('models', {});
 
-  const client = new OpenRouterClient(secrets, baseUrl);
+  const client = new OpenRouterClient(secrets, baseUrl, apiDialect);
   const registry = new ModelRegistry();
   const tracker = new SessionTracker();
   const provider = new ChatProvider(registry, client, tracker);

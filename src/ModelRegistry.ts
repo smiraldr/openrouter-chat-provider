@@ -42,7 +42,7 @@ export class ModelRegistry {
 
       const supportsImageInput = model.architecture.inputModalities.includes(InputModality.Image);
       const supportsReasoning = model.supportedParameters.includes(Parameter.Reasoning);
-      const maxOutputTokens = model.topProvider.maxCompletionTokens ?? 4096;
+      const maxOutputTokens = config?.maxOutputTokens ?? model.topProvider.maxCompletionTokens ?? 4096;
 
       const baseEntry: ModelEntry = {
         id: model.id,
@@ -51,7 +51,7 @@ export class ModelRegistry {
         tooltip: model.description,
         detail: 'ORCP',
         version: model.id,
-        maxInputTokens: model.contextLength ?? 0,
+        maxInputTokens: config?.contextLength ?? model.contextLength ?? 0,
         maxOutputTokens,
         capabilities: {
           toolCalling: true,
@@ -73,7 +73,7 @@ export class ModelRegistry {
             tooltip: model.description,
             detail: 'ORCP',
             version: model.id,
-            maxInputTokens: model.contextLength ?? 0,
+            maxInputTokens: config?.contextLength ?? model.contextLength ?? 0,
             maxOutputTokens,
             capabilities: {
               toolCalling: true,

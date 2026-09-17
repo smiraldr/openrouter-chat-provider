@@ -11,6 +11,10 @@ export interface ModelEntry extends vscode.LanguageModelChatInformation {
 export interface ModelConfig {
   enabled: boolean;
   effortLevels: ReasoningEffort[];
+  /** Overrides the context window reported for this model (useful with orcp.apiDialect "openai"). */
+  contextLength?: number;
+  /** Overrides the max output tokens reported for this model (useful with orcp.apiDialect "openai"). */
+  maxOutputTokens?: number;
 }
 
 export interface TurnRecord {
