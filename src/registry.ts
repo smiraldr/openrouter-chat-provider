@@ -36,7 +36,15 @@ export async function registerAll(
     registry.rebuild(rawModels, modelConfigs);
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
-    if (message.includes('API key') || message.includes('401')) {
+    // The SDK surfaces HTTP errors as typed errors whose message may not
+    // contain the status (e.g. "Response validation failed"), so the status
+    // code is the reliable trigger; the message fallbacks cover plain fetch
+    // errors, which embed the status as a whole word.
+    const rawStatus = err && typeof err === 'object'
+      ? (err as { statusCode?: unknown }).statusCode
+      : undefined;
+    const statusCode = typeof rawStatus === 'number' ? rawStatus : undefined;
+    if (statusCode === 401 || message.includes('API key') || /\b401\b/.test(message)) {
       const choice = await vscode.window.showErrorMessage(
         'ORCP: The API key is missing or was rejected. Models will not appear in the picker.',
         'Set API Key',
