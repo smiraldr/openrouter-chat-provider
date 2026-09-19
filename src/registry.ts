@@ -19,7 +19,7 @@ export async function registerAll(
   const apiDialect: ApiDialect = cfg.get<ApiDialect>('apiDialect', 'openrouter');
   const modelConfigs: Record<string, ModelConfig> = cfg.get('models', {});
 
-  if (apiDialect === 'openai' && baseUrl === 'https://openrouter.ai/api/v1') {
+  if (apiDialect === 'openai' && baseUrl.replace(/\/+$/, '') === 'https://openrouter.ai/api/v1') {
     vscode.window.showWarningMessage(
       'ORCP: orcp.apiDialect is "openai" but orcp.baseUrl is still the OpenRouter default. ' +
       'Set orcp.baseUrl to your OpenAI-compatible endpoint.',

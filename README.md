@@ -39,18 +39,6 @@ Each effort level creates a separate model entry in Copilot Chat (e.g., `Claude 
 
 ## Configuration
 
-### `orcp.baseUrl`
-
-Custom OpenRouter API base URL (default: `https://openrouter.ai/api/v1`).
-
-```json
-{
-  "orcp.baseUrl": "https://openrouter.ai/api/v1"
-}
-```
-
-Useful for proxies, self-hosted instances, or testing.
-
 ### `orcp.apiDialect`
 
 Dialect spoken by `orcp.baseUrl` (default: `openrouter`).
@@ -64,6 +52,18 @@ Dialect spoken by `orcp.baseUrl` (default: `openrouter`).
   "orcp.apiDialect": "openai"
 }
 ```
+
+### `orcp.baseUrl`
+
+Custom OpenRouter API base URL (default: `https://openrouter.ai/api/v1`).
+
+```json
+{
+  "orcp.baseUrl": "https://openrouter.ai/api/v1"
+}
+```
+
+Useful for proxies, self-hosted instances, or testing.
 
 ### `orcp.models`
 

@@ -28,13 +28,13 @@
         "orcp.apiDialect": {
           "title": "API Dialect",
           "default": "openrouter",
+          "description": "Dialect spoken by orcp.baseUrl. Use \"openai\" for plain OpenAI-compatible endpoints.",
           "type": "string",
           "enum": ["openrouter", "openai"],
           "enumDescriptions": [
             "OpenRouter API: model list via GET /models/user with OpenRouter model metadata",
             "Plain OpenAI-compatible API: model list via GET /models (IO Intelligence, vLLM, LiteLLM, ...)"
-          ],
-          "description": "Dialect spoken by orcp.baseUrl. Use \"openai\" for plain OpenAI-compatible endpoints."
+          ]
         },
         "orcp.baseUrl": {
           "title": "Base URL",
