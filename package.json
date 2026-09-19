@@ -30,7 +30,10 @@
           "default": "openrouter",
           "description": "Dialect spoken by orcp.baseUrl. Use \"openai\" for plain OpenAI-compatible endpoints.",
           "type": "string",
-          "enum": ["openrouter", "openai"],
+          "enum": [
+            "openrouter",
+            "openai"
+          ],
           "enumDescriptions": [
             "OpenRouter API: model list via GET /models/user with OpenRouter model metadata",
             "Plain OpenAI-compatible API: model list via GET /models (IO Intelligence, vLLM, LiteLLM, ...)"
@@ -45,7 +48,7 @@
         "orcp.models": {
           "title": "Models",
           "default": {},
-          "description": "Per-model configuration. Keys are OpenRouter model IDs (e.g. 'anthropic/claude-sonnet-4-5'). Set enabled to false to hide a model. Use effortLevels to expose reasoning effort variants (low, medium, high) for supported models. Example: { \"anthropic/claude-sonnet-4-5\": { \"enabled\": true, \"effortLevels\": [\"low\", \"medium\", \"high\"] } }. Models not listed are enabled by default with no effort variants.",
+          "description": "Per-model configuration. Keys are OpenRouter model IDs (e.g. 'anthropic/claude-sonnet-4-5'). Set enabled to false to hide a model. Use effortLevels to expose reasoning effort variants (low, medium, high) for supported models. Use contextLength / maxOutputTokens / toolCalling to override the values reported by the API (useful with orcp.apiDialect \"openai\"). Example: { \"anthropic/claude-sonnet-4-5\": { \"enabled\": true, \"effortLevels\": [\"low\", \"medium\", \"high\"] } }. Models not listed are enabled by default with no effort variants.",
           "type": "object"
         }
       },
