@@ -26,7 +26,7 @@ export class OpenRouterClient {
   constructor(
     private readonly secrets: SecretsManager,
     private readonly baseUrl: string,
-    private readonly apiDialect: ApiDialect = 'openrouter',
+    readonly apiDialect: ApiDialect = 'openrouter',
   ) {}
 
   private async getClient(): Promise<OpenRouter> {
@@ -96,8 +96,16 @@ export class OpenRouterClient {
     if (!response.ok) {
       throw new Error(`GET ${base}/models failed: ${response.status} ${response.statusText}`);
     }
-    const payload = (await response.json()) as { data?: Array<{ id?: string }> };
-    return (payload.data ?? [])
+    let payload: { data?: Array<{ id?: string }> };
+    try {
+      payload = (await response.json()) as { data?: Array<{ id?: string }> };
+    } catch (err) {
+      throw new Error(`GET ${base}/models returned a non-JSON body: ${err instanceof Error ? err.message : String(err)}`);
+    }
+    if (!payload || !Array.isArray(payload.data)) {
+      throw new Error(`GET ${base}/models returned an unexpected JSON shape`);
+    }
+    return payload.data
       .filter(m => typeof m?.id === 'string')
       .map(m => toOpenRouterModel(m.id!));
   }
@@ -126,12 +134,11 @@ export class OpenRouterClient {
       chatRequest.reasoning = { effort: opts.effort };
     }
 
-    if (opts.toolChoice) {
-      chatRequest.toolChoice = opts.toolChoice;
-    }
-
+    // Strict OpenAI-compatible servers reject tool_choice when no tools are
+    // attached (HTTP 400), so it is only sent alongside tools.
     if (opts.tools?.length) {
       chatRequest.tools = opts.tools;
+      chatRequest.toolChoice = opts.toolChoice;
     }
 
     if (opts.maxTokens) {

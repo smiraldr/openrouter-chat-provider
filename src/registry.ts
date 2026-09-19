@@ -44,7 +44,7 @@ export async function registerAll(
         await secrets.promptAndSave();
       }
     } else {
-      vscode.window.showErrorMessage(`ORCP: Failed to load models. ${String(err)}`);
+      vscode.window.showErrorMessage(`ORCP: Failed to load models. ${err instanceof Error ? err.message : String(err)}`);
     }
   }
 
