@@ -124,6 +124,7 @@ Per-model configuration. Keys are OpenRouter model IDs. Set `enabled` to false t
 
 **"ORCP: Rate limit reached"**
 - You've hit OpenRouter's rate limit
+- With `orcp.apiDialect` `"openai"`, rate limits come from your endpoint — check its documentation
 - Wait a moment ando/or check your [rate limit documentation](https://openrouter.ai/docs/api/reference/limits)
 
 **Models not appearing**

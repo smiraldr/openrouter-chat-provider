@@ -35,16 +35,17 @@ export async function registerAll(
     const rawModels = await client.listModels();
     registry.rebuild(rawModels, modelConfigs);
   } catch (err) {
-    if (err instanceof Error && err.message.includes('API key')) {
+    const message = err instanceof Error ? err.message : String(err);
+    if (message.includes('API key') || message.includes('401')) {
       const choice = await vscode.window.showErrorMessage(
-        'ORCP: No API key configured. Models will not appear in the picker.',
+        'ORCP: The API key is missing or was rejected. Models will not appear in the picker.',
         'Set API Key',
       );
       if (choice === 'Set API Key') {
         await secrets.promptAndSave();
       }
     } else {
-      vscode.window.showErrorMessage(`ORCP: Failed to load models. ${err instanceof Error ? err.message : String(err)}`);
+      vscode.window.showErrorMessage(`ORCP: Failed to load models. ${message}`);
     }
   }
 

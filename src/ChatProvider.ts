@@ -66,15 +66,22 @@ export class ChatProvider implements vscode.LanguageModelChatProvider<ModelEntry
       }, abort.signal);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
-      if (msg.includes('401') || msg.includes('Unauthorized')) {
+      // The SDK surfaces HTTP errors as typed errors whose message may not
+      // contain the status (e.g. "Response validation failed" or the raw
+      // body text), so the status code is the reliable trigger.
+      const rawStatus = err && typeof err === 'object'
+        ? (err as { statusCode?: unknown }).statusCode
+        : undefined;
+      const statusCode = typeof rawStatus === 'number' ? rawStatus : undefined;
+      if (statusCode === 401 || msg.includes('401') || msg.includes('Unauthorized')) {
         throw new Error('ORCP: Invalid API key. Run "ORCP: Set API Key".');
       }
-      if (msg.includes('402') || msg.includes('Payment')) {
+      if (statusCode === 402 || msg.includes('402') || msg.includes('Payment')) {
         throw new Error(this.client.apiDialect === 'openai'
           ? 'ORCP: The endpoint returned 402 Payment Required. Check your account with the provider.'
           : 'ORCP: Insufficient credits. Visit https://openrouter.ai/credits');
       }
-      if (msg.includes('429') || msg.includes('rate limit') || msg.includes('Too Many')) {
+      if (statusCode === 429 || msg.includes('429') || msg.includes('rate limit') || msg.includes('Too Many')) {
         throw new Error('ORCP: Rate limit reached. Please wait a moment.');
       }
       throw err;
