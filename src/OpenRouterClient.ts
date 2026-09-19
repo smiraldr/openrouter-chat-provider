@@ -89,14 +89,17 @@ export class OpenRouterClient {
     if (!apiKey) {
       throw new Error('API key is not set. Use ORCP: Set API Key command.');
     }
-    const response = await fetch(`${this.baseUrl}/models`, {
+    const base = this.baseUrl.replace(/\/+$/, '');
+    const response = await fetch(`${base}/models`, {
       headers: { Authorization: `Bearer ${apiKey}` },
     });
     if (!response.ok) {
-      throw new Error(`GET ${this.baseUrl}/models failed: ${response.status} ${response.statusText}`);
+      throw new Error(`GET ${base}/models failed: ${response.status} ${response.statusText}`);
     }
-    const payload = (await response.json()) as { data?: Array<{ id: string }> };
-    return (payload.data ?? []).map(m => toOpenRouterModel(m.id));
+    const payload = (await response.json()) as { data?: Array<{ id?: string }> };
+    return (payload.data ?? [])
+      .filter(m => typeof m?.id === 'string')
+      .map(m => toOpenRouterModel(m.id!));
   }
 
   async streamChat(

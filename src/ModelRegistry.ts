@@ -43,6 +43,7 @@ export class ModelRegistry {
       const supportsImageInput = model.architecture.inputModalities.includes(InputModality.Image);
       const supportsReasoning = model.supportedParameters.includes(Parameter.Reasoning);
       const maxOutputTokens = config?.maxOutputTokens ?? model.topProvider.maxCompletionTokens ?? 4096;
+      const toolCalling = config?.toolCalling ?? true;
 
       const baseEntry: ModelEntry = {
         id: model.id,
@@ -54,7 +55,7 @@ export class ModelRegistry {
         maxInputTokens: config?.contextLength ?? model.contextLength ?? 0,
         maxOutputTokens,
         capabilities: {
-          toolCalling: true,
+          toolCalling,
           imageInput: supportsImageInput,
         },
 
@@ -76,7 +77,7 @@ export class ModelRegistry {
             maxInputTokens: config?.contextLength ?? model.contextLength ?? 0,
             maxOutputTokens,
             capabilities: {
-              toolCalling: true,
+              toolCalling,
               imageInput: supportsImageInput,
             },
 

@@ -56,7 +56,7 @@ Useful for proxies, self-hosted instances, or testing.
 Dialect spoken by `orcp.baseUrl` (default: `openrouter`).
 
 - `openrouter` — models are listed via OpenRouter's `GET /models/user`, with OpenRouter model metadata (tool support, context window, modalities)
-- `openai` — models are listed via the plain OpenAI-compatible `GET /models`. Use this for endpoints such as [IO Intelligence](https://io.net/), vLLM, or LiteLLM. All listed models are treated as text chat models with tool calling; reasoning-effort variants are not available in this mode.
+- `openai` — models are listed via the plain OpenAI-compatible `GET /models`. Use this for endpoints such as [IO Intelligence](https://io.net/), vLLM, or LiteLLM. All listed models are treated as text chat models with tool calling (disable per model via `orcp.models` `"toolCalling": false` if your endpoint does not support tools); reasoning-effort variants are not available in this mode, and plain endpoints do not report usage cost, so session cost shows $0.00.
 
 ```json
 {
@@ -96,6 +96,7 @@ Per-model configuration. Keys are OpenRouter model IDs. Set `enabled` to false t
 - Models not listed are **enabled by default** with no effort variants
 - Effort levels only work on models that support reasoning (e.g., Claude, GPT-5)
 - `contextLength` / `maxOutputTokens` override the values reported by the API — useful with `orcp.apiDialect` `"openai"`, where `GET /models` does not include them (defaults: 32768 / 4096)
+- `toolCalling: false` disables tool calling for that model (for endpoints whose models cannot call tools)
 - Model IDs can be found in the [OpenRouter model list](https://openrouter.ai/models)
 
 ## Commands

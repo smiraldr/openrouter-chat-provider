@@ -15,6 +15,8 @@ export interface ModelConfig {
   contextLength?: number;
   /** Overrides the max output tokens reported for this model (useful with orcp.apiDialect "openai"). */
   maxOutputTokens?: number;
+  /** Disables tool calling for this model, for endpoints whose models cannot call tools. */
+  toolCalling?: boolean;
 }
 
 export interface TurnRecord {
